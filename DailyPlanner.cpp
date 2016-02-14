@@ -1,7 +1,7 @@
 /* This is a daily planner. The planner is based on a menu system and runs within the console. 
  * Created by: claycot
  */
-
+ 
 #include "stdafx.h"
 
 #include <iostream>
@@ -77,8 +77,11 @@ void drawPlanner(string planner[]) {
 		else if (i == 12) {
 			cout << i << ":00 PM\t" << planner[i] << "\n";
 		}
-		else if (i > 12) {
+		else if (i > 12 && i < 24) {
 			cout << setw(2) << i - 12 << ":00 PM\t" << planner[i] << "\n";
+		}
+		else if (i == 24) {
+			cout << i - 12 << ":00 AM\t" << planner[i] << "\n";
 		}
 	}
 	cout << "============================================"
@@ -100,8 +103,11 @@ void addEvent(string planner[]) {
 	else if (time == 12) {
 		cout << time << ":00 PM?" << endl;
 	}
-	else if (time > 12 && time <= 24) {
+	else if (time > 12 && time < 24) {
 		cout << time - 12 << ":00 PM?" << endl;
+	}
+	else if (time == 24) {
+		cout << time - 12 << ":00 AM?" << endl;
 	}
 	cin >> ws;
 	getline(cin, event);
@@ -144,11 +150,14 @@ void savePlanner(string planner[]) {
 		else if (i == 12) {
 			out_file << i << ":00 PM\t" << planner[i] << "\n";
 		}
-		else if (i > 12) {
+		else if (i > 12 && i < 24) {
 			out_file << setw(2) << setfill('0') << i - 12 << ":00 PM\t" << planner[i] << "\n";
 		}
+		else if (i == 24) {
+			out_file << i - 12 << ":00 AM\t" << planner[i] << "\n";
+		}
 	}
-
+	cout << "Your planner was saved as \"your_daily_planner.txt\"!";
 	out_file.close();
 }
 
@@ -171,19 +180,24 @@ void loadPlanner(string planner[]) {
 			getline(in_file, rawLine);
 			rawAMPM = rawLine.substr(6, 2);
 			rawTime = stoi(rawLine.substr(0, 2), nullptr, 10);
-			if (rawAMPM == "AM") {
+			if (rawAMPM == "AM" && rawTime != 12) {
 				time = rawTime;
 			}
-			else if (rawAMPM == "PM" && rawTime == 12) {
-				time = 12;
+			else if (rawAMPM == "AM" && rawTime == 12) {
+				time = 24;
 			}
 			else if (rawAMPM == "PM" && rawTime != 12) {
 				time = rawTime + 12;
 			}
+			else if (rawAMPM == "PM" && rawTime == 12) {
+				time = 12;
+			}
+			
 			event = rawLine.substr(9);
 
 			planner[time] = event;
 		}
+		cout << "Your planner was loaded!";
 	}
 }
 
